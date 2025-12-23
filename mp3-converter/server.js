@@ -8,11 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const ACCESS_KEY = process.env.ACCESS_KEY || "akaki";
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
-});
+const ACCESS_KEY = process.env.ACCESS_KEY || "changeme";
 
 app.post("/convert", (req, res) => {
   const { url, key } = req.body;
@@ -40,9 +36,7 @@ app.post("/convert", (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log("==============================");
-  console.log(" MP3 Converter Server Running ");
-  console.log(" http://localhost:3000 ");
-  console.log("==============================");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("Server running on port", PORT);
 });

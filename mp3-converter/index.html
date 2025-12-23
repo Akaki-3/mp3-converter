@@ -2,46 +2,48 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Private MP3 Converter</title>
+    <title>MP3 Converter(მუსიკები)</title>
 
     <style>
       body {
-        background: linear-gradient(135deg, #0f172a, #020617);
-        font-family: system-ui, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        margin: 0;
         height: 100vh;
+        background: linear-gradient(135deg, #0f172a, #020617);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, sans-serif;
         color: #e5e7eb;
       }
 
-      .card {
+      .box {
         background: #020617;
-        padding: 28px;
-        border-radius: 18px;
+        padding: 30px;
         width: 420px;
-        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        border-radius: 20px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         text-align: center;
       }
 
       h1 {
         font-size: 22px;
-        margin-bottom: 16px;
+        margin-bottom: 20px;
       }
 
       input {
         width: 100%;
         padding: 12px;
+        margin-top: 10px;
         border-radius: 12px;
         border: 1px solid #334155;
         background: #020617;
-        color: #e5e7eb;
-        margin-top: 10px;
+        color: white;
+        outline: none;
       }
 
       button {
+        margin-top: 15px;
         width: 100%;
-        margin-top: 14px;
         padding: 12px;
         border-radius: 12px;
         border: none;
@@ -64,13 +66,15 @@
     </style>
   </head>
   <body>
-    <div class="card">
+    <div class="box">
       <h1>ვიდეო → MP3</h1>
 
-      <input id="key" placeholder="პაროლი" />
-      <input id="url" placeholder="ჩაწერე/ჩააკოპირე ვიდეოს ლინკი" />
+      <input id="key" placeholder="Access key" />
+      <input id="url" placeholder="Paste video link" />
 
-      <button id="btn" onclick="convert()">კონვერტირება და გადმოწერა</button>
+      <button id="btn" onclick="convert()">
+        გადაყვანა mp3 ში და გადმოწერა
+      </button>
 
       <div class="status" id="status"></div>
     </div>
@@ -81,7 +85,7 @@
         const status = document.getElementById("status");
 
         btn.disabled = true;
-        status.textContent = "კოვერტირება მიმდინარეობს... დაელოდე ⏳";
+        status.textContent = "მუშავდება";
 
         try {
           const res = await fetch("/convert", {
@@ -94,8 +98,7 @@
           });
 
           if (!res.ok) {
-            const text = await res.text();
-            throw new Error(text);
+            throw new Error(await res.text());
           }
 
           const blob = await res.blob();
@@ -107,8 +110,8 @@
           a.remove();
 
           status.textContent = "გადმოწერა დაიწყო ✔";
-        } catch (err) {
-          status.textContent = "Error: " + err.message;
+        } catch (e) {
+          status.textContent = "Error: " + e.message;
         }
 
         btn.disabled = false;
