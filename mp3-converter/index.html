@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Private MP3 Converter</title>
+
+    <style>
+      body {
+        background: linear-gradient(135deg, #0f172a, #020617);
+        font-family: system-ui, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #e5e7eb;
+      }
+
+      .card {
+        background: #020617;
+        padding: 28px;
+        border-radius: 18px;
+        width: 420px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 22px;
+        margin-bottom: 16px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 12px;
+        border: 1px solid #334155;
+        background: #020617;
+        color: #e5e7eb;
+        margin-top: 10px;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 14px;
+        padding: 12px;
+        border-radius: 12px;
+        border: none;
+        background: #2563eb;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+        opacity: 0.8;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>ვიდეო → MP3</h1>
+
+      <input id="key" placeholder="პაროლი" />
+      <input id="url" placeholder="ჩაწერე/ჩააკოპირე ვიდეოს ლინკი" />
+
+      <button id="btn" onclick="convert()">კონვერტირება და გადმოწერა</button>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <script>
+      async function convert() {
+        const btn = document.getElementById("btn");
+        const status = document.getElementById("status");
+
+        btn.disabled = true;
+        status.textContent = "კოვერტირება მიმდინარეობს... დაელოდე ⏳";
+
+        try {
+          const res = await fetch("/convert", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              url: document.getElementById("url").value,
+              key: document.getElementById("key").value,
+            }),
+          });
+
+          if (!res.ok) {
+            const text = await res.text();
+            throw new Error(text);
+          }
+
+          const blob = await res.blob();
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "converted.mp3";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+
+          status.textContent = "გადმოწერა დაიწყო ✔";
+        } catch (err) {
+          status.textContent = "Error: " + err.message;
+        }
+
+        btn.disabled = false;
+      }
+    </script>
+  </body>
+</html>
